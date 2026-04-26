@@ -1,0 +1,20 @@
+name: dream_path CI
+
+on:
+  workflow_dispatch:
+  pull_request:
+  push:
+    branches: main
+    tags: ['*']
+
+jobs:
+  build:
+    permissions:
+      contents: write
+      pages: write
+      id-token: write
+    uses: DreamWeave-MP/StroggForge/.github/workflows/libGlobalBuild.yml@v14
+    secrets: inherit
+    with:
+      crate_names: '["dream_path"]'
+      generate_benchmarks: true
