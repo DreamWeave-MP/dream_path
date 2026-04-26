@@ -265,9 +265,8 @@ This crate is small and the rules are deliberately narrow, but the public API is
 still `0.1`. Treat it as ready for shared internal use in DreamWeave/OpenMW-adjacent
 code, not as a semver-frozen ecosystem primitive yet.
 
-Before treating it as a widely stable dependency, this should probably grow CI,
-more property/fuzz coverage for byte inputs, and whatever trait impls real users
-need rather than whatever trait impls look nice in the abstract.
+Before treating it as a widely stable dependency, this should have more property/fuzz coverage for byte inputs,
+and whatever trait impls real users need rather than whatever trait impls look nice in the abstract.
 
 ## Development
 
