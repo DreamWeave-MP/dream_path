@@ -3,7 +3,21 @@ name = "dream-path"
 version = "0.1.0"
 edition = "2024"
 rust-version = "1.85"
+description = "Byte-first normalized virtual resource paths for DreamWeave/OpenMW-style asset lookup"
+readme = "README.md"
+documentation = "https://docs.rs/dream-path"
 license = "GPL-3.0-only"
+keywords = ["openmw", "vfs", "assets", "paths", "modding"]
+categories = ["game-development"]
+include = ["src/**", "Cargo.toml", "README.md", "LICENSE"]
 
 [dependencies]
 bstr = { version = "1.12", default-features = false, features = ["std"] }
+mlua = { version = "0.10", default-features = false, features = ["luajit52", "vendored"], optional = true }
+
+[features]
+default = []
+lua = ["dep:mlua"]
+
+[package.metadata.docs.rs]
+features = ["lua"]
