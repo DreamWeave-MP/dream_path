@@ -292,3 +292,11 @@ cargo check --package dream-path
 
 - MSRV: Rust 1.85
 - License: GPL-3.0-only
+
+## Support
+
+Has `dream-path` been useful to you?
+
+If so, please consider [amplifying the signal](https://ko-fi.com/magicaldave) through my ko-fi. 
+
+Thank you for using `dream-path`.
