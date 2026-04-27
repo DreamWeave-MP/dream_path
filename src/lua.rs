@@ -4,10 +4,14 @@
 //! `cdylib` Lua module; hosts embed it into their own [`mlua::Lua`] state and
 //! choose the namespace they want.
 //!
-//! The feature selects `mlua` with vendored `LuaJIT` in 5.2 compatibility mode.
-//! Libraries should avoid enabling it transitively unless they own the embedding
-//! runtime. Hosts using a different Lua runtime should bind the Rust byte API
-//! themselves.
+//! The `lua` feature deliberately does not select an [`mlua`] backend. The host
+//! process owns the Lua runtime decision and should enable exactly one shared
+//! backend in the final dependency graph. DreamWeave recommends LuaJIT in 5.2
+//! compatibility mode and does not currently test these bindings against other
+//! Lua runtimes. Use this crate's `standalone-lua` feature only for documentation
+//! builds, examples, and local smoke tests that do not already have a central Lua
+//! runtime crate.
+//!
 //! Returned Lua strings may contain embedded NUL bytes; C hosts must use
 //! length-aware Lua APIs rather than C string length.
 

@@ -14,11 +14,12 @@ include = ["src/**", "Cargo.toml", "README.md", "LICENSE"]
 
 [dependencies]
 bstr = { version = "1.12", default-features = false, features = ["std"] }
-mlua = { version = "0.10", default-features = false, features = ["luajit52", "vendored"], optional = true }
+mlua = { version = "0.10", default-features = false, optional = true }
 
 [features]
 default = []
 lua = ["dep:mlua"]
+standalone-lua = ["lua", "mlua/luajit52", "mlua/vendored"]
 
 [package.metadata.docs.rs]
-features = ["lua"]
+features = ["standalone-lua"]

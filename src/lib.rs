@@ -26,6 +26,14 @@
 //! table without registering a global, while [`lua::register_module`] installs it
 //! as the default `dream_path` global.
 //!
+//! The `lua` feature does not choose a Lua backend. Engine/application crates own
+//! that decision and should enable exactly one shared [`mlua`] runtime for the
+//! final dependency graph. DreamWeave recommends LuaJIT in 5.2 compatibility mode
+//! and does not currently test these bindings against other Lua runtimes. If a
+//! host chooses another backend, it owns that compatibility burden. For standalone
+//! documentation and local smoke tests, the `standalone-lua` feature enables
+//! `lua` plus `mlua`'s `luajit52` and `vendored` features.
+//!
 //! The Lua API treats Lua strings as raw path bytes, preserving invalid UTF-8 and
 //! embedded NUL bytes. It is embed-only: this crate does not provide a `cdylib`
 //! Lua module loader, and hosts that already own a different Lua runtime should

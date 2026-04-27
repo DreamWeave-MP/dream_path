@@ -27,12 +27,28 @@ Enable the optional embedded Lua API with:
 dream-path = { version = "0.1", features = ["lua"] }
 ```
 
-The `lua` feature uses `mlua` with vendored LuaJIT in 5.2 compatibility mode
-(`luajit52`). It is embed-only: no `cdylib`, no standalone Lua module loader, no
-pretending deployment is someone else's problem. It also means enabling `lua`
-selects a concrete Lua runtime and pulls in a C build; hosts that already choose
-a different `mlua` runtime should keep this feature off and bind the Rust byte
-API themselves.
+The `lua` feature exposes bindings for an existing `mlua` runtime. It does not
+select a Lua backend. Engine and application crates should choose exactly one
+shared `mlua` backend at the top of the dependency graph, then enable
+`dream-path`'s `lua` feature so this crate can register its table into that
+shared runtime.
+
+DreamWeave recommends LuaJIT in 5.2 compatibility mode and does not currently
+test these bindings against other Lua runtimes. If a host chooses another
+backend, it owns that compatibility burden. A feature matrix is not a prayer
+wheel; untested runtime combinations are merely rumors with build scripts.
+
+For standalone documentation builds, examples, and local smoke tests, use:
+
+```toml
+[dependencies]
+dream-path = { version = "0.1", features = ["standalone-lua"] }
+```
+
+`standalone-lua` enables `lua` plus `mlua`'s vendored LuaJIT in 5.2 compatibility
+mode (`luajit52`). It is a convenience valve, not the pattern for composing a
+large engine. Leaf crates that each summon their own Lua runtime are how you get
+linkage tumors.
 
 ## Normalization rules
 
