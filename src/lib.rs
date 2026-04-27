@@ -59,10 +59,9 @@ test these bindings against other Lua runtimes.
 
 use std::{borrow::Borrow, str::Utf8Error};
 
-use bstr::{BStr, BString};
+use bstr::{BStr, BString, ByteSlice as _};
 
 pub use bstr;
-pub use bstr::ByteSlice;
 
 #[cfg(feature = "lua")]
 pub mod lua;
