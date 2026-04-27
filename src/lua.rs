@@ -6,7 +6,7 @@
 //!
 //! The `lua` feature deliberately does not select an [`mlua`] backend. The host
 //! process owns the Lua runtime decision and should enable exactly one shared
-//! backend in the final dependency graph. DreamWeave recommends LuaJIT in 5.2
+//! backend in the final dependency graph. `DreamWeave` recommends `LuaJIT` in 5.2
 //! compatibility mode and does not currently test these bindings against other
 //! Lua runtimes. Use this crate's `standalone-lua` feature only for documentation
 //! builds, examples, and local smoke tests that do not already have a central Lua
