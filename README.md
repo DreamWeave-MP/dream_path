@@ -147,10 +147,12 @@ normalized bytes. A constructor that secretly sometimes normalizes and sometimes
 does not would be adorable, in the way an intermittent shadow acne regression is
 adorable.
 
-`bstr` is part of the public API: `NormalizedPath` exposes `BStr`/`BString`
-views and conversions. It implements `AsRef<[u8]>`, `AsRef<bstr::BStr>`,
-`Borrow<[u8]>`, and `Borrow<bstr::BStr>`, so normalized lookup keys can be
-queried without allocating:
+`bstr` is part of the public API and is re-exported as `dream_path::bstr`, so
+downstream crates do not need a separate direct `bstr` dependency just to name
+types returned by this crate. `NormalizedPath` exposes `BStr`/`BString` views and
+conversions. It implements `AsRef<[u8]>`, `AsRef<dream_path::bstr::BStr>`,
+`Borrow<[u8]>`, and `Borrow<dream_path::bstr::BStr>`, so normalized lookup keys
+can be queried without allocating:
 
 ```rust
 use std::collections::HashMap;
@@ -176,8 +178,8 @@ normalize_path_into(&mut scratch, br"Meshes\Door.NIF");
 assert_eq!(resources.get(scratch.as_slice()), Some(&42));
 ```
 
-Consuming conversions are provided for `bstr::BString` and `Vec<u8>` when the
-normalized bytes need to move into another owner.
+Consuming conversions are provided for `dream_path::bstr::BString` and `Vec<u8>`
+when the normalized bytes need to move into another owner.
 
 String-oriented callers can use `NormalizedPath::to_str`, which is fallible on
 purpose:
@@ -200,8 +202,7 @@ engines made them share a trench coat.
 Small byte-level helpers are available for virtual resource path inspection:
 
 ```rust
-use bstr::BStr;
-use dream_path::NormalizedPath;
+use dream_path::{NormalizedPath, bstr::BStr};
 
 let path = NormalizedPath::new("Textures/Architecture/Wall.DDS");
 assert_eq!(path.parent(), Some(BStr::new(b"textures/architecture")));

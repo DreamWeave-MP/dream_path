@@ -61,6 +61,7 @@ use std::{borrow::Borrow, str::Utf8Error};
 
 use bstr::{BStr, BString};
 
+pub use bstr;
 pub use bstr::ByteSlice;
 
 #[cfg(feature = "lua")]
