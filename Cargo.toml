@@ -1,6 +1,6 @@
 [package]
 name = "dream-path"
-version = "0.1.1"
+version = "0.1.2"
 edition = "2024"
 rust-version = "1.87"
 description = "Byte-first normalized virtual resource paths for DreamWeave/OpenMW-style asset lookup"
