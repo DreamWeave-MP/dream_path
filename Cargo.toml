@@ -2,7 +2,7 @@
 name = "dream-path"
 version = "0.1.1"
 edition = "2024"
-rust-version = "1.85"
+rust-version = "1.87"
 description = "Byte-first normalized virtual resource paths for DreamWeave/OpenMW-style asset lookup"
 readme = "README.md"
 documentation = "https://dreamweave-mp.github.io/dream_path/dream_path/index.html"
@@ -13,7 +13,7 @@ categories = ["game-development"]
 include = ["src/**", "Cargo.toml", "README.md", "LICENSE"]
 
 [dependencies]
-bstr = { version = "1.12", default-features = false, features = ["std"] }
+bstr = { version = "1.12.1", default-features = false, features = ["std"] }
 mlua = { version = "0.11.6", default-features = false, optional = true }
 
 [features]
