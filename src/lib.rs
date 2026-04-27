@@ -18,6 +18,18 @@
 //! compute archive-format hashes. Those are separate jobs. Mixing them into the
 //! path type would be a small architectural crime, so naturally we avoid doing
 //! that.
+//!
+//! ## Lua API
+//!
+//! Enable the `lua` feature to embed the same byte-preserving normalization API
+//! into an existing [`mlua::Lua`] state. [`lua::create_module`] builds the API
+//! table without registering a global, while [`lua::register_module`] installs it
+//! as the default `dream_path` global.
+//!
+//! The Lua API treats Lua strings as raw path bytes, preserving invalid UTF-8 and
+//! embedded NUL bytes. It is embed-only: this crate does not provide a `cdylib`
+//! Lua module loader, and hosts that already own a different Lua runtime should
+//! bind the Rust byte API themselves.
 
 use std::{borrow::Borrow, str::Utf8Error};
 
