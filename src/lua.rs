@@ -1,29 +1,29 @@
-//! Embedded Lua bindings for byte-first path normalization.
+//! Embedded Luau bindings for byte-first path normalization.
 //!
 //! This module is available with the `lua` feature. It does not define a
-//! `cdylib` Lua module; hosts embed it into their own [`mlua::Lua`] state and
-//! choose the namespace they want.
+//! `cdylib` module; hosts embed it into their own [`mlua::Lua`] state and
+//! choose the namespace they want. Names follow Luau conventions: functions are
+//! camelCase.
 //!
 //! The `lua` feature deliberately does not select an [`mlua`] backend. The host
-//! process owns the Lua runtime decision and should enable exactly one shared
-//! backend in the final dependency graph. `DreamWeave` recommends `LuaJIT` in 5.2
-//! compatibility mode and does not currently test these bindings against other
-//! Lua runtimes. Use this crate's `standalone-lua` feature only for documentation
-//! builds, examples, and local smoke tests that do not already have a central Lua
-//! runtime crate.
+//! process owns the runtime decision and should enable exactly one shared
+//! backend in the final dependency graph. `DreamWeave` uses Luau and tests these
+//! bindings against it. Use this crate's `standalone-lua` feature only for
+//! documentation builds, examples, and local smoke tests that do not already
+//! have a central Luau runtime crate.
 //!
 //! Returned Lua strings may contain embedded NUL bytes; C hosts must use
 //! length-aware Lua APIs rather than C string length.
 
 use bstr::ByteSlice as _;
-use mlua::{Error, Lua, Result, String as LuaString, Table, Value};
+use mlua::{Error, Lua, LuaString, Result, Table, Value};
 
 use crate::{NormalizedPath, is_normalized_path, normalize_path};
 
-/// Default Lua global name used by [`register_module`].
-pub const MODULE_NAME: &str = "dream_path";
+/// Default global name used by [`register_module`].
+pub const MODULE_NAME: &str = "dreamPath";
 
-/// Create the `dream_path` Lua API table without registering it globally.
+/// Create the `dreamPath` API table without registering it globally.
 ///
 /// The API is intentionally thin and byte-preserving. Lua strings are treated
 /// as byte strings; invalid UTF-8 is accepted anywhere a path is accepted.
@@ -43,14 +43,14 @@ pub fn create_module(lua: &Lua) -> Result<Table> {
         })?,
     )?;
     module.set(
-        "is_normalized",
+        "isNormalized",
         lua.create_function(|_, path: Value| {
             let path = expect_string(path)?;
             Ok(is_normalized_path(path.as_bytes().as_ref()))
         })?,
     )?;
     module.set(
-        "file_name",
+        "fileName",
         lua.create_function(|lua, path: Value| {
             let path = expect_string(path)?;
             component(lua, &path, NormalizedPath::file_name)
@@ -71,7 +71,7 @@ pub fn create_module(lua: &Lua) -> Result<Table> {
         })?,
     )?;
     module.set(
-        "is_utf8",
+        "isUtf8",
         lua.create_function(|_, path: Value| {
             let path = expect_string(path)?;
             Ok(path.as_bytes().as_ref().is_utf8())
@@ -80,7 +80,7 @@ pub fn create_module(lua: &Lua) -> Result<Table> {
     Ok(module)
 }
 
-/// Register the Lua API table as the `dream_path` global.
+/// Register the API table as the `dreamPath` global.
 ///
 /// # Errors
 ///
@@ -133,7 +133,7 @@ fn expect_string(value: Value) -> Result<LuaString> {
 
 #[cfg(test)]
 mod tests {
-    use mlua::{Lua, String as LuaString};
+    use mlua::{Lua, LuaString};
 
     use super::{MODULE_NAME, register_module, register_module_as};
 
@@ -143,7 +143,7 @@ mod tests {
         register_module(&lua).expect("module registration should succeed");
 
         let normalized: LuaString = lua
-            .load(r#"return dream_path.normalize("Textures\\Foo.DDS")"#)
+            .load(r#"return dreamPath.normalize("Textures\\Foo.DDS")"#)
             .eval()
             .expect("normalization should succeed");
 
@@ -156,11 +156,11 @@ mod tests {
         register_module(&lua).expect("module registration should succeed");
 
         let normalized: LuaString = lua
-            .load(r#"return dream_path.normalize("DIR/\255/FILE")"#)
+            .load(r#"return dreamPath.normalize("DIR/\255/FILE")"#)
             .eval()
             .expect("normalization should succeed");
         let is_utf8: bool = lua
-            .load(r#"return dream_path.is_utf8("DIR/\255/FILE")"#)
+            .load(r#"return dreamPath.isUtf8("DIR/\255/FILE")"#)
             .eval()
             .expect("UTF-8 check should succeed");
 
@@ -174,7 +174,7 @@ mod tests {
         register_module(&lua).expect("module registration should succeed");
 
         let normalized: LuaString = lua
-            .load(r#"return dream_path.normalize("A\0B")"#)
+            .load(r#"return dreamPath.normalize("A\0B")"#)
             .eval()
             .expect("normalization should succeed");
 
@@ -190,10 +190,10 @@ mod tests {
             .load(
                 r#"
                 return
-                    dream_path.parent("/Textures\\Architecture/Wall.DDS"),
-                    dream_path.file_name("/Textures\\Architecture/Wall.DDS"),
-                    dream_path.extension("/Textures\\Architecture/Wall.DDS"),
-                    dream_path.is_normalized("textures/architecture/wall.dds")
+                    dreamPath.parent("/Textures\\Architecture/Wall.DDS"),
+                    dreamPath.fileName("/Textures\\Architecture/Wall.DDS"),
+                    dreamPath.extension("/Textures\\Architecture/Wall.DDS"),
+                    dreamPath.isNormalized("textures/architecture/wall.dds")
                 "#,
             )
             .eval()
@@ -219,10 +219,10 @@ mod tests {
             .load(
                 r#"
                 return
-                    dream_path.file_name("/"),
-                    dream_path.parent("foo"),
-                    dream_path.extension(".hidden"),
-                    dream_path.extension("foo.")
+                    dreamPath.fileName("/"),
+                    dreamPath.parent("foo"),
+                    dreamPath.extension(".hidden"),
+                    dreamPath.extension("foo.")
                 "#,
             )
             .eval()
@@ -240,22 +240,22 @@ mod tests {
         register_module(&lua).expect("module registration should succeed");
 
         assert!(
-            lua.load("return dream_path.normalize()")
+            lua.load("return dreamPath.normalize()")
                 .eval::<LuaString>()
                 .is_err()
         );
         assert!(
-            lua.load("return dream_path.normalize(nil)")
+            lua.load("return dreamPath.normalize(nil)")
                 .eval::<LuaString>()
                 .is_err()
         );
         assert!(
-            lua.load("return dream_path.normalize(42)")
+            lua.load("return dreamPath.normalize(42)")
                 .eval::<LuaString>()
                 .is_err()
         );
         assert!(
-            lua.load("return dream_path.normalize({})")
+            lua.load("return dreamPath.normalize({})")
                 .eval::<LuaString>()
                 .is_err()
         );
@@ -267,7 +267,7 @@ mod tests {
         register_module(&lua).expect("module registration should succeed");
 
         let extension: LuaString = lua
-            .load(r#"return dream_path.extension("Foo.\255")"#)
+            .load(r#"return dreamPath.extension("Foo.\255")"#)
             .eval()
             .expect("extension should succeed");
 

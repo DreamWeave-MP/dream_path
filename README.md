@@ -14,17 +14,17 @@ virtual resource paths so independent lookup layers can agree on keys.
 
 ```toml
 [dependencies]
-dream-path = "0.1"
+dream-path = "0.2"
 ```
 
 With default features, the crate has one dependency,
 [`bstr`](https://crates.io/crates/bstr), used for byte-string storage and views.
 
-Enable the optional embedded Lua API with:
+Enable the optional embedded Luau API with:
 
 ```toml
 [dependencies]
-dream-path = { version = "0.1", features = ["lua"] }
+dream-path = { version = "0.2", features = ["lua"] }
 ```
 
 The `lua` feature exposes bindings for an existing `mlua` runtime. It does not
@@ -33,20 +33,19 @@ shared `mlua` backend at the top of the dependency graph, then enable
 `dream-path`'s `lua` feature so this crate can register its table into that
 shared runtime.
 
-DreamWeave recommends LuaJIT in 5.2 compatibility mode and does not currently
-test these bindings against other Lua runtimes. If a host chooses another
-backend, it owns that compatibility burden. A feature matrix is not a prayer
+DreamWeave uses Luau and tests these bindings against it. If a host chooses
+another backend, it owns that compatibility burden. A feature matrix is not a prayer
 wheel; untested runtime combinations are merely rumors with build scripts.
 
 For standalone documentation builds, examples, and local smoke tests, use:
 
 ```toml
 [dependencies]
-dream-path = { version = "0.1", features = ["standalone-lua"] }
+dream-path = { version = "0.2", features = ["standalone-lua"] }
 ```
 
-`standalone-lua` enables `lua` plus `mlua`'s vendored LuaJIT in 5.2 compatibility
-mode (`luajit52`). It is a convenience valve, not the pattern for composing a
+`standalone-lua` enables `lua` plus `mlua`'s Luau backend (`luau`). It is a
+convenience valve, not the pattern for composing a
 large engine. Leaf crates that each summon their own Lua runtime are how you get
 linkage tumors.
 
@@ -224,13 +223,13 @@ For callers that already have normalized owned bytes,
 normalization pass and returns the original `Vec<u8>` on rejection. The unchecked
 constructor exists for measured hot paths, not for vibes.
 
-## Lua API
+## Luau API
 
-With the `lua` feature enabled, hosts can create or register a Lua table:
+With the `lua` feature enabled, hosts can create or register a Luau table:
 
 ```rust,no_run
 let lua = mlua::Lua::new();
-dream_path::lua::register_module(&lua)?; // global `dream_path`
+dream_path::lua::register_module(&lua)?; // global `dreamPath`
 # Ok::<(), mlua::Error>(())
 ```
 
@@ -246,30 +245,30 @@ lua.globals().set("paths", module)?;
 `register_module_as` uses the supplied name as a direct global key. It does not
 parse dotted names into nested tables.
 
-Exposed Lua functions:
+Exposed functions, camelCase like the rest of DreamWeave's Luau APIs:
 
 - `normalize(path: string) -> string`
-- `is_normalized(path: string) -> boolean`
-- `file_name(path: string) -> string | nil`
-- `parent(path: string) -> string | nil`
-- `extension(path: string) -> string | nil`
-- `is_utf8(path: string) -> boolean`
+- `isNormalized(path: string) -> boolean`
+- `fileName(path: string) -> string?`
+- `parent(path: string) -> string?`
+- `extension(path: string) -> string?`
+- `isUtf8(path: string) -> boolean`
 
-Lua strings are treated as byte strings. The helpers normalize before splitting,
+Luau strings are treated as byte strings. The helpers normalize before splitting,
 so scripts can pass ordinary resource paths without manually calling
 `normalize` first:
 
-```lua
-local path = dream_path.normalize([[Textures\Foo.DDS]])
+```luau
+local path = dreamPath.normalize([[Textures\Foo.DDS]])
 assert(path == "textures/foo.dds")
-assert(dream_path.extension(path) == "dds")
+assert(dreamPath.extension(path) == "dds")
 ```
 
-Invalid UTF-8 is valid path data in Lua too. If a host wants display text, it can
+Invalid UTF-8 is valid path data in Luau too. If a host wants display text, it can
 choose an encoding policy at the host boundary. This crate will not guess. It has
 self-respect, or at least a small API surface that resembles it.
 
-Returned Lua strings may contain embedded NUL bytes. C/C++ hosts must use
+Returned strings may contain embedded NUL bytes. C/C++ hosts must use
 length-aware Lua APIs, not C string length. Yes, this still needs saying.
 
 Lua path arguments must be strings. Missing or non-string arguments are errors;
@@ -279,7 +278,7 @@ Lua will let you confuse them if you insist.
 ## Maturity
 
 This crate is small and the rules are deliberately narrow, but the public API is
-still `0.1`. Treat it as ready for shared internal use in DreamWeave/OpenMW-adjacent
+still `0.2`. Treat it as ready for shared internal use in DreamWeave/OpenMW-adjacent
 code, not as a semver-frozen ecosystem primitive yet.
 
 Before treating it as a widely stable dependency, this should have more property/fuzz coverage for byte inputs,

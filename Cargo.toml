@@ -13,13 +13,13 @@ categories = ["game-development"]
 include = ["src/**", "Cargo.toml", "README.md", "LICENSE"]
 
 [dependencies]
-bstr = { version = "1.12.1", default-features = false, features = ["std"] }
-mlua = { version = "0.11.6", default-features = false, optional = true }
+bstr = { version = "1.13.1", default-features = false, features = ["std"] }
+mlua = { version = "0.12.1", default-features = false, optional = true }
 
 [features]
 default = []
 lua = ["dep:mlua"]
-standalone-lua = ["lua", "mlua/luajit52", "mlua/vendored"]
+standalone-lua = ["lua", "mlua/luau"]
 
 [package.metadata.docs.rs]
 features = ["standalone-lua"]
