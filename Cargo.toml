@@ -23,3 +23,11 @@ standalone-lua = ["lua", "mlua/luau"]
 
 [package.metadata.docs.rs]
 features = ["standalone-lua"]
+
+[dev-dependencies]
+criterion = { version = "0.8.2", features = ["html_reports"] }
+
+[[bench]]
+name = "luau_boundary"
+harness = false
+required-features = ["standalone-lua"]
