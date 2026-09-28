@@ -20,40 +20,28 @@
 //! that.
 #![cfg_attr(
     feature = "lua",
-    doc = r"
-## Lua API
+    doc = r#"
+## Luau API
 
-Enable the `lua` feature to embed the same byte-preserving normalization API
-into an existing [`mlua::Lua`] state. [`lua::create_module`] builds the API table
-without registering a global, while [`lua::register_module`] installs it as the
-default `dream_path` global.
+Enable the `lua` feature to expose the same byte-preserving normalization API to
+Luau through [l3i](https://github.com/DreamWeave-MP/l3i). [`lua::PathExtension`]
+is an `l3i::extension::Extension` providing the module `@dream/path`; a host
+composes it into its `RuntimePlan` and scripts `require("@dream/path")`. The
+crate never creates a VM and never installs a global; a host that wants the
+historical `dreamPath` global exposes the module as a compatibility global.
 
-The `lua` feature does not choose a Lua backend. Engine/application crates own
-that decision and should enable exactly one shared [`mlua`] runtime for the final
-dependency graph. `DreamWeave` recommends `LuaJIT` in 5.2 compatibility mode and
-does not currently test these bindings against other Lua runtimes. If a host
-chooses another backend, it owns that compatibility burden. For standalone
-documentation and local smoke tests, the `standalone-lua` feature enables `lua`
-plus `mlua`'s `luajit52` and `vendored` features.
-
-The Lua API treats Lua strings as raw path bytes, preserving invalid UTF-8 and
-embedded NUL bytes. It is embed-only: this crate does not provide a `cdylib` Lua
-module loader, and hosts that already own a different Lua runtime should bind the
-Rust byte API themselves.
-"
+The Luau API treats Luau strings as raw path bytes, preserving invalid UTF-8 and
+embedded NUL bytes, and a call allocates nothing after warm-up.
+"#
 )]
 #![cfg_attr(
     not(feature = "lua"),
     doc = r#"
-## Lua API
+## Luau API
 
-Lua bindings are available behind the `lua` feature. Build documentation with
-`--features standalone-lua` to include links to the embedded Lua API.
-
-The `lua` feature does not choose a Lua backend. Engine/application crates should
-enable exactly one shared `mlua` runtime for the final dependency graph.
-`DreamWeave` recommends `LuaJIT` in 5.2 compatibility mode and does not currently
-test these bindings against other Lua runtimes.
+Luau bindings are available behind the `lua` feature, as an l3i extension
+providing the module `@dream/path`. Build documentation with `--features lua` to
+include the embedded Luau API.
 "#
 )]
 

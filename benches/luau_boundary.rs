@@ -5,7 +5,9 @@
 //! Criterion reporting per-call throughput.
 
 use criterion::{Criterion, Throughput, criterion_group, criterion_main};
-use mlua::{Function, Lua};
+use dream_path::lua::{MODULE, MODULE_NAME, PathExtension};
+use l3i::Runtime;
+use l3i::extension::{RuntimePlan, RuntimePolicy};
 
 const CALLS: u64 = 1000;
 
@@ -46,15 +48,24 @@ const SCRIPTS: &[(&str, &str)] = &[
 ];
 
 fn bench_boundary(c: &mut Criterion) {
-    let lua = Lua::new();
-    dream_path::lua::register_module(&lua).expect("register dreamPath");
-    lua.globals().set("N", CALLS).expect("set N");
+    let policy = RuntimePolicy::new().compat_global(MODULE, MODULE_NAME);
+    let plan = RuntimePlan::builder()
+        .policy(policy)
+        .extension(PathExtension)
+        .finalize()
+        .expect("finalize the plan");
+    let runtime = Runtime::from_plan(&plan).expect("a runtime from the plan");
+    runtime.exec(&format!("N = {CALLS}")).expect("set N");
     let mut group = c.benchmark_group("luau_boundary");
     group.throughput(Throughput::Elements(CALLS));
     for (name, script) in SCRIPTS {
-        let function: Function = lua.load(*script).eval().expect("compile script");
+        let function = runtime.load_function(script).expect("compile script");
         group.bench_function(*name, |b| {
-            b.iter(|| function.call::<()>(()).expect("run script"));
+            b.iter(|| {
+                function
+                    .invoke::<(), ()>(&runtime.stack(), ())
+                    .expect("run script");
+            });
         });
     }
     group.finish();

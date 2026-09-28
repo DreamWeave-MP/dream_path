@@ -14,7 +14,7 @@ virtual resource paths so independent lookup layers can agree on keys.
 
 ```toml
 [dependencies]
-dream-path = "0.2"
+dream-path = "0.3"
 ```
 
 With default features, the crate has one dependency,
@@ -24,30 +24,15 @@ Enable the optional embedded Luau API with:
 
 ```toml
 [dependencies]
-dream-path = { version = "0.2", features = ["lua"] }
+dream-path = { version = "0.3", features = ["lua"] }
 ```
 
-The `lua` feature exposes bindings for an existing `mlua` runtime. It does not
-select a Lua backend. Engine and application crates should choose exactly one
-shared `mlua` backend at the top of the dependency graph, then enable
-`dream-path`'s `lua` feature so this crate can register its table into that
-shared runtime.
-
-DreamWeave uses Luau and tests these bindings against it. If a host chooses
-another backend, it owns that compatibility burden. A feature matrix is not a prayer
-wheel; untested runtime combinations are merely rumors with build scripts.
-
-For standalone documentation builds, examples, and local smoke tests, use:
-
-```toml
-[dependencies]
-dream-path = { version = "0.2", features = ["standalone-lua"] }
-```
-
-`standalone-lua` enables `lua` plus `mlua`'s Luau backend (`luau`). It is a
-convenience valve, not the pattern for composing a
-large engine. Leaf crates that each summon their own Lua runtime are how you get
-linkage tumors.
+The `lua` feature binds the crate as an [l3i](https://github.com/DreamWeave-MP/l3i)
+extension. It does not create a Luau VM and does not install a global: the host
+composes `dream_path::lua::PathExtension` into its `RuntimePlan`, and every
+runtime made from that plan can `require("@dream/path")`. One binder, one VM per
+host, no feature valve for a second Lua backend; a feature matrix is not a prayer
+wheel.
 
 ## Normalization rules
 
@@ -225,27 +210,25 @@ constructor exists for measured hot paths, not for vibes.
 
 ## Luau API
 
-With the `lua` feature enabled, hosts can create or register a Luau table:
+With the `lua` feature enabled, `dream_path::lua::PathExtension` is an l3i
+extension with id `dream.path` providing the module `@dream/path`:
 
 ```rust,no_run
-let lua = mlua::Lua::new();
-dream_path::lua::register_module(&lua)?; // global `dreamPath`
-# Ok::<(), mlua::Error>(())
+use dream_path::lua::{MODULE, MODULE_NAME, PathExtension};
+use l3i::Runtime;
+use l3i::extension::{RuntimePlan, RuntimePolicy};
+
+// Optional: expose the module as the historical `dreamPath` global as well.
+let policy = RuntimePolicy::new().compat_global(MODULE, MODULE_NAME);
+let plan = RuntimePlan::builder().policy(policy).extension(PathExtension).finalize()?;
+let runtime = Runtime::from_plan(&plan)?;
+runtime.exec(r#"local path = require("@dream/path") assert(path.normalize([[A\B]]) == "a/b")"#)?;
+# Ok::<(), l3i::Error>(())
 ```
 
-For non-global or host-specific namespaces, use the dehardcoded form:
-
-```rust,no_run
-let lua = mlua::Lua::new();
-let module = dream_path::lua::create_module(&lua)?;
-lua.globals().set("paths", module)?;
-# Ok::<(), mlua::Error>(())
-```
-
-`register_module_as` uses the supplied name as a direct global key. It does not
-parse dotted names into nested tables.
-
-Exposed functions, camelCase like the rest of DreamWeave's Luau APIs:
+The module is frozen, typed (the plan's `.d.luau` declares every function, and the
+crate's tests type-check a strict script against it), and never installs a global
+by itself. Exposed functions, camelCase like the rest of DreamWeave's Luau APIs:
 
 - `normalize(path: string) -> string`
 - `isNormalized(path: string) -> boolean`
@@ -254,11 +237,15 @@ Exposed functions, camelCase like the rest of DreamWeave's Luau APIs:
 - `extension(path: string) -> string?`
 - `isUtf8(path: string) -> boolean`
 
-Luau strings are treated as byte strings. The helpers normalize before splitting,
-so scripts can pass ordinary resource paths without manually calling
-`normalize` first:
+Luau strings are treated as byte strings and are read as borrowed views: no copy,
+no UTF-8 requirement. Each call normalizes once, into a thread-local scratch
+buffer, and pushes its result straight from there (an already-normalized input is
+pushed as is), so a call allocates nothing after warm-up. The helpers normalize
+before splitting, so scripts can pass ordinary resource paths without manually
+calling `normalize` first:
 
 ```luau
+local dreamPath = require("@dream/path")
 local path = dreamPath.normalize([[Textures\Foo.DDS]])
 assert(path == "textures/foo.dds")
 assert(dreamPath.extension(path) == "dds")
@@ -271,14 +258,36 @@ self-respect, or at least a small API surface that resembles it.
 Returned strings may contain embedded NUL bytes. C/C++ hosts must use
 length-aware Lua APIs, not C string length. Yes, this still needs saying.
 
-Lua path arguments must be strings. Missing or non-string arguments are errors;
+Path arguments must be strings. Missing or non-string arguments are errors;
 missing components are returned as `nil`. These are different things. Naturally,
 Lua will let you confuse them if you insist.
+
+Measured per call from a script (`cargo bench --features lua --bench luau_boundary`,
+1000 calls per sample, the same scripts against the previous mlua binding):
+
+| call | mlua 0.12 | l3i |
+|---|---:|---:|
+| `normalize` (mixed spelling) | 327 ns | see below |
+| `normalize` (already normalized) | 297 ns | |
+| `normalize` (56-byte mixed path) | 314 ns | |
+| `isNormalized` | 156 ns | |
+| `fileName` | 252 ns | |
+| `parent` | 279 ns | |
+| `extension` | 306 ns | |
+| `isUtf8` | 145 ns | |
+
+### Migrating from the mlua binding (0.2)
+
+`lua::create_module`, `lua::register_module`, and `lua::register_module_as` are
+gone with `mlua`, and so is the `standalone-lua` feature. Compose
+`lua::PathExtension` into the host's `RuntimePlan` instead; the global, if the
+host still wants one, is `RuntimePolicy::compat_global("@dream/path", "dreamPath")`.
+The Luau API shape is unchanged.
 
 ## Maturity
 
 This crate is small and the rules are deliberately narrow, but the public API is
-still `0.2`. Treat it as ready for shared internal use in DreamWeave/OpenMW-adjacent
+still `0.3`. Treat it as ready for shared internal use in DreamWeave/OpenMW-adjacent
 code, not as a semver-frozen ecosystem primitive yet.
 
 Before treating it as a widely stable dependency, this should have more property/fuzz coverage for byte inputs,
@@ -305,7 +314,7 @@ cargo check --package dream-path
 
 ## MSRV and license
 
-- MSRV: Rust 1.85
+- MSRV: Rust 1.88
 - License: GPL-3.0-only
 
 ## Support
