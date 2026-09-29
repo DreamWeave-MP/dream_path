@@ -178,6 +178,41 @@
       "groups": [],
       "extensions": {},
       "critical_extensions": []
+    },
+    {
+      "version": "1.0.0",
+      "locked_from": "b3d33ea9cfa8c9a214296b6645e091a16b242c21",
+      "artifacts": [
+        {
+          "id": "crate",
+          "format": "crate",
+          "filename": "dream-path-1.0.0.crate",
+          "media_type": "application/gzip",
+          "size": 30995,
+          "digests": {
+            "sha256": "141f666f9371f98d5e88a37bc388413a5acc77fae4f82d8d114e0297683010de"
+          }
+        }
+      ],
+      "runtimes": {},
+      "platforms": [],
+      "provides": [],
+      "relationships": [],
+      "components": [
+        {
+          "id": "main",
+          "name": "dream-path",
+          "path": ".",
+          "required": true,
+          "default": true,
+          "requires": [],
+          "conflicts": [],
+          "suggested_with": []
+        }
+      ],
+      "groups": [],
+      "extensions": {},
+      "critical_extensions": []
     }
   ]
 }
