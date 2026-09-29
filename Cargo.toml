@@ -1,6 +1,6 @@
 [package]
 name = "dream-path"
-version = "0.2.0"
+version = "0.3.0"
 edition = "2024"
 rust-version = "1.88"
 description = "Byte-first normalized virtual resource paths for DreamWeave/OpenMW-style asset lookup"
@@ -14,7 +14,7 @@ include = ["src/**", "Cargo.toml", "README.md", "LICENSE"]
 
 [dependencies]
 bstr = { version = "1.13.1", default-features = false, features = ["std"] }
-l3i = { path = "../dream-binder", optional = true }
+l3i = { version = "0.1", path = "../dream-binder", optional = true }
 
 [features]
 default = []
@@ -26,7 +26,7 @@ features = ["lua"]
 [dev-dependencies]
 criterion = { version = "0.8.2", features = ["html_reports"] }
 # The definitions gate (`RuntimePlan::check_definitions`) needs Luau's analysis frontend.
-l3i = { path = "../dream-binder", features = ["analysis"] }
+l3i = { version = "0.1", path = "../dream-binder", features = ["analysis"] }
 
 [[bench]]
 name = "luau_boundary"
