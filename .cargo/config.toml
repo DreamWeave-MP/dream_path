@@ -29,3 +29,8 @@ rustflags = ["-Clinker-plugin-lto", "-Clinker=lld-link"]
 
 [target.aarch64-pc-windows-msvc]
 rustflags = ["-Clinker-plugin-lto", "-Clinker=lld-link"]
+
+# Local override until l3i 1.0.0 is on crates.io: the campaign builds against the sibling
+# checkout. Delete this table once the registry release is authoritative.
+[patch.crates-io]
+l3i = { path = "../dream-binder" }
