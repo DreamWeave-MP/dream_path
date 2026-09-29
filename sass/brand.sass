@@ -1,0 +1,30 @@
+// dream-path. This file belongs to dream-path: the template never changes it, and it loads last.
+// The ember palette does the heavy lifting; this adds the crate's one idea to the hero.
+
+// The hero's empty right column shows what the crate does: spellings on the left, the one key
+// each becomes on the right. It is decoration, so its alternative text is empty.
+.dw-hero
+  overflow: hidden
+  isolation: isolate
+
+  &::after
+    content: "Textures\\Wood.DDS\A  \2192  textures/wood.dds\A\A //Meshes\\\\x\\Door.NIF\A  \2192  meshes/x/door.nif\A\A Sound/FX/../Door.WAV\A  \2192  sound/fx/../door.wav\A\A MUSIC\\Explore\\\\\A  \2192  music/explore/" / ""
+    position: absolute
+    z-index: -1
+    top: 50%
+    right: max(2rem, calc((100vw - var(--dw-width-page)) / 2 + 2rem))
+    transform: translateY(-50%)
+    border-left: 2px solid color-mix(in oklab, var(--dw-accent) 45%, transparent)
+    padding: .9rem 0 .9rem 1.2rem
+    color: var(--dw-text-faint)
+    font-family: var(--dw-font-mono)
+    font-size: .8rem
+    line-height: 1.7
+    white-space: pre
+    opacity: .65
+    pointer-events: none
+    mask-image: linear-gradient(90deg, #000 75%, transparent)
+
+  @media (max-width: 1180px)
+    &::after
+      display: none

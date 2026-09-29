@@ -1,0 +1,20 @@
+{
+  "id": "keys",
+  "title": "Every layer asks for the same key",
+  "description": "Archives, loose files, scripts and the renderer each receive paths spelled their own way. Normalizing them all the same way is what lets a lookup in one find what another stored.",
+  "mode": "flow",
+  "direction": "horizontal",
+  "nodes": [
+    { "id": "spellings", "kind": "source", "title": "Any spelling", "detail": "Textures\\Tx_Wood.DDS from a plugin, textures/tx_wood.dds from an archive, //TEXTURES/tx_wood.dds from a script." },
+    { "id": "normalize", "kind": "tool", "title": "dream-path", "detail": "Backslashes to slashes, ASCII to lowercase, repeated and leading separators gone. Every other byte kept." },
+    { "id": "key", "kind": "result", "title": "One key", "detail": "textures/tx_wood.dds: the same bytes wherever the lookup happens, stored once as a NormalizedPath." },
+    { "id": "archives", "kind": "service", "role": "support", "title": "Archives and the VFS", "detail": "dream_archive and vfstool index entries by the normalized key." },
+    { "id": "scripts", "kind": "service", "role": "support", "title": "Luau scripts", "detail": "require(\"@dream/path\") gives scripts the same rules, byte for byte." }
+  ],
+  "edges": [
+    { "from": "spellings", "to": "normalize" },
+    { "from": "normalize", "to": "key" },
+    { "from": "key", "to": "archives", "kind": "support", "label": "index" },
+    { "from": "key", "to": "scripts", "kind": "support", "label": "@dream/path" }
+  ]
+}
