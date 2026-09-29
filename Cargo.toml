@@ -20,14 +20,16 @@ l3i = { version = "0.1", path = "../dream-binder", optional = true }
 [features]
 default = []
 lua = ["dep:l3i"]
+# The definitions gate (`RuntimePlan::check_definitions`) needs Luau's analysis frontend. Cargo
+# has no optional dev-dependencies, so the typed tests build behind this feature
+# (`cargo test --features luau-analysis`) and a plain `cargo test --features lua` skips them.
+luau-analysis = ["lua", "l3i/analysis"]
 
 [package.metadata.docs.rs]
 features = ["lua"]
 
 [dev-dependencies]
 criterion = { version = "0.8.2", features = ["html_reports"] }
-# The definitions gate (`RuntimePlan::check_definitions`) needs Luau's analysis frontend.
-l3i = { version = "0.1", path = "../dream-binder", features = ["analysis"] }
 
 [[bench]]
 name = "luau_boundary"

@@ -164,11 +164,8 @@ mod tests {
 
     /// Evaluates `expression` in a script and reads the result back as bytes.
     fn eval_bytes(runtime: &Runtime, expression: &str) -> Vec<u8> {
-        let function = runtime
-            .load_function(&format!("return function() return {expression} end"))
-            .expect("the expression compiles");
-        function
-            .invoke::<Vec<u8>, ()>(&runtime.stack(), ())
+        runtime
+            .eval::<Vec<u8>>(&format!("return {expression}"))
             .expect("the expression evaluates to a string")
     }
 
@@ -272,14 +269,19 @@ mod tests {
     }
 
     #[test]
-    fn the_module_is_frozen_and_typed() {
-        let plan = plan();
-        let runtime = Runtime::from_plan(&plan).expect("a runtime from the plan");
+    fn the_module_is_frozen() {
+        let runtime = runtime();
         let error = runtime
             .exec(r#"require("@dream/path").normalize = nil"#)
             .expect_err("the module is read-only")
             .to_string();
         assert!(error.contains("readonly"), "{error}");
+    }
+
+    #[cfg(feature = "luau-analysis")]
+    #[test]
+    fn the_module_is_typed() {
+        let plan = plan();
         // The declared types are Luau the frontend accepts, and a strict script that requires
         // the module by its canonical path type checks against the plan's stub.
         plan.check_definitions().expect("the declared types check");
@@ -306,6 +308,7 @@ mod tests {
     }
 
     /// Type checks `script` in strict mode against the plan's definitions and module stubs.
+    #[cfg(feature = "luau-analysis")]
     fn check_strict_script(plan: &Rc<RuntimePlan>, script: &str) {
         use l3i::analysis::{
             Analysis, AnalysisOptions, Definitions, Mode, ModuleConfig, SourceCode, SourceProvider,

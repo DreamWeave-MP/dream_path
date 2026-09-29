@@ -85,7 +85,9 @@ fn main() -> l3i::Result<()> {
 Every function carries a Luau signature. `plan.type_definitions()` returns the `.d.luau` text for
 everything in the plan, `@dream/path` included, ready to save for an editor's language server.
 With l3i's `analysis` feature, `plan.check_definitions()` type-checks those definitions; this
-crate's tests run it, and type-check a strict script against the module.
+crate's tests run it, and type-check a strict script against the module, behind the
+`luau-analysis` feature (`cargo test --features luau-analysis`), so a plain test run does not
+build the analysis frontend.
 
 ## What scripts get
 
