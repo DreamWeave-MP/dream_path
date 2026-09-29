@@ -38,6 +38,8 @@ github_project = "dream_path"
 
 logo_text = "dream-path"
 footer_text = "dream-path · GPL-3.0-only · DreamWeave contributors"
+# Two separators becoming one: the crate's rules in a tile.
+favicon = "img/dream-path.svg"
 
 palette = "ember"
 
