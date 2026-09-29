@@ -18,17 +18,11 @@ url = "https://github.com/DreamWeave-MP"
 documentation = "@/docs/_index.md"
 donate = "https://ko-fi.com/magicaldave"
 
-# A Rust library. StroggForge's library workflow tests it on every push; pushing a bare version
-# tag, like 0.3.0, publishes that version to crates.io.
+# A Rust library. StroggForge's library workflow (.github/workflows/ci.yml) tests it on every push;
+# pushing a bare version tag, like 0.3.0, publishes that version to crates.io and records it here.
 [package]
 format = "crate"
 crate = "dream-path"
-
-[build]
-# The crates that share these keys: each release opens an issue in them.
-dependents = ["DreamWeave-MP/dream_archive", "DreamWeave-MP/vfstool"]
-# cargo bench on every release, attached to its GitHub release as BENCHMARKS.md.
-benchmarks = true
 
 # Every version on crates.io, oldest first. To release, add the next one here with the day you
 # publish it, set the same version in Cargo.toml, commit, and push its tag: git tag 0.3.0.
