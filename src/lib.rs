@@ -248,16 +248,31 @@ impl From<NormalizedPath> for Vec<u8> {
 /// `http:/foo/bar` may all be normalized according to this predicate.
 #[must_use]
 pub fn is_normalized_path(path: &[u8]) -> bool {
+    normalized_prefix_len(path) == path.len()
+}
+
+/// The length of the longest prefix of `path` that already has the normalized spelling: the
+/// bytes before the first uppercase ASCII letter, backslash, leading separator, or repeated
+/// separator. Normalization copies that prefix as one block and rewrites only the rest.
+fn normalized_prefix_len(path: &[u8]) -> usize {
     let mut previous_was_separator = true;
-    for &byte in path {
+    for (index, &byte) in path.iter().enumerate() {
         match byte {
-            b'\\' | b'A'..=b'Z' => return false,
-            b'/' if previous_was_separator => return false,
+            b'\\' | b'A'..=b'Z' => return index,
+            b'/' if previous_was_separator => return index,
             b'/' => previous_was_separator = true,
             _ => previous_was_separator = false,
         }
     }
-    true
+    path.len()
+}
+
+/// One byte's normalized spelling: `\` becomes `/`, ASCII uppercase becomes lowercase.
+#[inline]
+fn fold_byte(byte: u8) -> u8 {
+    // Branch-free: the case bit is set exactly for `A..=Z`, then the one separator swap.
+    let lowered = byte | (u8::from(byte.wrapping_sub(b'A') < 26) << 5);
+    if lowered == b'\\' { b'/' } else { lowered }
 }
 
 /// Return the final non-empty component of an already-normalized virtual path.
@@ -335,20 +350,25 @@ pub fn normalize_path_owned(mut path: Vec<u8>) -> Vec<u8> {
 /// allocation is reused; its length may shrink when leading or repeated
 /// separators are removed.
 pub fn normalize_path_in_place(path: &mut Vec<u8>) {
-    let mut write = 0;
-    let mut previous_was_separator = true;
-    for read in 0..path.len() {
-        let byte = match path[read] {
-            b'\\' => b'/',
-            b'A'..=b'Z' => path[read] + 32,
-            byte => byte,
-        };
-        if byte == b'/' && previous_was_separator {
-            continue;
+    // The already-normalized prefix stays where it is; only the rest is rewritten.
+    let prefix = normalized_prefix_len(path);
+    if prefix == path.len() {
+        return;
+    }
+    let mut previous_was_separator = prefix == 0 || path[prefix - 1] == b'/';
+    let mut write = prefix;
+    for read in prefix..path.len() {
+        let byte = fold_byte(path[read]);
+        if byte == b'/' {
+            if previous_was_separator {
+                continue;
+            }
+            previous_was_separator = true;
+        } else {
+            previous_was_separator = false;
         }
         path[write] = byte;
         write += 1;
-        previous_was_separator = byte == b'/';
     }
     path.truncate(write);
 }
@@ -362,18 +382,33 @@ pub fn normalize_path_in_place(path: &mut Vec<u8>) {
 /// discard or shrink it at the caller boundary if that matters.
 pub fn normalize_path_into(out: &mut Vec<u8>, path: &[u8]) {
     out.clear();
+    // The already-normalized prefix (the whole input, for a key that is normalized already)
+    // copies as one block; the loop rewrites only what follows it.
+    let prefix = normalized_prefix_len(path);
     out.reserve(path.len());
-    for byte in path.iter().copied() {
-        let byte = match byte {
-            b'\\' => b'/',
-            b'A'..=b'Z' => byte + 32,
-            _ => byte,
-        };
-        if byte == b'/' && (out.is_empty() || out.last() == Some(&b'/')) {
-            continue;
-        }
-        out.push(byte);
+    out.extend_from_slice(&path[..prefix]);
+    if prefix == path.len() {
+        return;
     }
+    let mut previous_was_separator = prefix == 0 || path[prefix - 1] == b'/';
+    // The rest is at most as long as the input: size the buffer once and write by index
+    // instead of growing it a byte at a time.
+    out.resize(path.len(), 0);
+    let mut write = prefix;
+    for &byte in &path[prefix..] {
+        let byte = fold_byte(byte);
+        if byte == b'/' {
+            if previous_was_separator {
+                continue;
+            }
+            previous_was_separator = true;
+        } else {
+            previous_was_separator = false;
+        }
+        out[write] = byte;
+        write += 1;
+    }
+    out.truncate(write);
 }
 
 fn without_trailing_separator(bytes: &[u8]) -> &[u8] {

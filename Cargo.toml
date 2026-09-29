@@ -32,3 +32,7 @@ l3i = { path = "../dream-binder", features = ["analysis"] }
 name = "luau_boundary"
 harness = false
 required-features = ["lua"]
+
+[[bench]]
+name = "normalize"
+harness = false
