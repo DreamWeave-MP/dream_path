@@ -69,38 +69,22 @@ breaking = [
 added = ["`isNormalized` in Lua."]
 
 [[releases]]
-version = "0.3.0"
-date = 2026-09-28
-summary = "The Luau API is an l3i extension providing @dream/path, and normalization is faster."
+version = "1.0.0"
+date = 2026-09-29
+summary = "First stable release: the Luau API is an l3i extension providing @dream/path, normalization is faster, and the Rust and Luau APIs are under semver."
 breaking = [
     "The `lua` feature binds the crate as an l3i extension, `lua::PathExtension`, providing the module `@dream/path`. `create_module`, `register_module`, `register_module_as` and the `standalone-lua` feature are gone with `mlua`.",
     "Building with the `lua` feature needs l3i's toolchain: clang, lld and cross-language thin LTO.",
-    "Rust 1.88.",
+    "Rust 1.92.",
 ]
 changed = [
     "An already-normalized path is copied as one block, and the rest folded without branches: a normalized 56-byte key costs 36 ns instead of 91 ns.",
     "A Luau call reads its path as a borrowed view and normalizes into a per-thread buffer, allocating nothing after warm-up; calls take about half as long as with `mlua`.",
+    "The definitions check and the strict-script test build behind the `luau-analysis` feature (`cargo test --features luau-analysis`); `cargo test --features lua` does not build Luau's analysis frontend.",
+    "l3i 1.0.0 comes from crates.io.",
 ]
 migration = """
 Compose `dream_path::lua::PathExtension` into the host's `RuntimePlan`. A host that still wants the
 `dreamPath` global adds `RuntimePolicy::compat_global("@dream/path", "dreamPath")`. The functions
 and their results are unchanged.
 """
-
-# Declared ahead of its tag: the page lists it as unreleased until 0.3.1 is pushed. Set the date
-# to the day you publish it.
-[[releases]]
-version = "0.3.1"
-date = 2026-09-28
-summary = "The typed tests build behind a feature, so a plain test run skips Luau's analysis frontend."
-changed = [
-    "The definitions check and the strict-script test build behind the `luau-analysis` feature (`cargo test --features luau-analysis`); `cargo test --features lua` no longer builds Luau's analysis frontend.",
-]
-
-[[releases]]
-version = "1.0.0"
-date = 2026-09-29
-summary = "First stable release: the l3i binding is the crate's Luau surface, and the Rust and Luau APIs are now under semver."
-changed = [
-    "Version 1.0.0 with no code change since 0.3.1: `@dream/path` on the l3i binder, byte-first arguments, one normalization per call, and the typed definitions gate are the stable contract. Declared ahead of its tag, like 0.3.1.",
-]
