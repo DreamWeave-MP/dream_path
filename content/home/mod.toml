@@ -68,8 +68,6 @@ breaking = [
 ]
 added = ["`isNormalized` in Lua."]
 
-# Declared ahead of its tag: the page lists it as unreleased until 0.3.0 is pushed. Set the date
-# to the day you publish it.
 [[releases]]
 version = "0.3.0"
 date = 2026-09-28
@@ -88,3 +86,13 @@ Compose `dream_path::lua::PathExtension` into the host's `RuntimePlan`. A host t
 `dreamPath` global adds `RuntimePolicy::compat_global("@dream/path", "dreamPath")`. The functions
 and their results are unchanged.
 """
+
+# Declared ahead of its tag: the page lists it as unreleased until 0.3.1 is pushed. Set the date
+# to the day you publish it.
+[[releases]]
+version = "0.3.1"
+date = 2026-09-28
+summary = "The typed tests build behind a feature, so a plain test run skips Luau's analysis frontend."
+changed = [
+    "The definitions check and the strict-script test build behind the `luau-analysis` feature (`cargo test --features luau-analysis`); `cargo test --features lua` no longer builds Luau's analysis frontend.",
+]
