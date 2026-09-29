@@ -263,18 +263,24 @@ missing components are returned as `nil`. These are different things. Naturally,
 Lua will let you confuse them if you insist.
 
 Measured per call from a script (`cargo bench --features lua --bench luau_boundary`,
-1000 calls per sample, the same scripts against the previous mlua binding):
+1000 calls per sample, the same frozen scripts against the previous mlua binding,
+both pinned to one core, minimum of five runs on a loaded machine):
 
 | call | mlua 0.12 | l3i |
 |---|---:|---:|
-| `normalize` (mixed spelling) | 327 ns | see below |
-| `normalize` (already normalized) | 297 ns | |
-| `normalize` (56-byte mixed path) | 314 ns | |
-| `isNormalized` | 156 ns | |
-| `fileName` | 252 ns | |
-| `parent` | 279 ns | |
-| `extension` | 306 ns | |
-| `isUtf8` | 145 ns | |
+| `normalize` (mixed spelling, 20 bytes) | 258 ns | 120 ns |
+| `normalize` (already normalized) | 245 ns | 94 ns |
+| `normalize` (56-byte mixed path) | 325 ns | 163 ns |
+| `isNormalized` | 131 ns | 68 ns |
+| `fileName` | 241 ns | 109 ns |
+| `parent` | 278 ns | 117 ns |
+| `extension` | 273 ns | 113 ns |
+| `isUtf8` | 145 ns | 64 ns |
+
+The Rust core (`cargo bench --bench normalize`, `normalize_path_into` into a reused
+buffer) copies the already-normalized prefix as one block: an already-normalized
+56-byte key costs 36 ns instead of 91 ns, a 20-byte one 17 ns instead of 32 ns, and
+a key whose only change is a late uppercase extension 38 ns instead of 78 ns.
 
 ### Migrating from the mlua binding (0.2)
 
