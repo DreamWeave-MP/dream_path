@@ -36,13 +36,13 @@ embedded NUL bytes, and a call allocates nothing after warm-up.
 )]
 #![cfg_attr(
     not(feature = "lua"),
-    doc = r#"
+    doc = r"
 ## Luau API
 
 Luau bindings are available behind the `lua` feature, as an l3i extension
 providing the module `@dream/path`. Build documentation with `--features lua` to
 include the embedded Luau API.
-"#
+"
 )]
 
 use std::{borrow::Borrow, str::Utf8Error};
