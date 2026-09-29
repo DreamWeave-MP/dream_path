@@ -1,30 +1,64 @@
 // dream-path. This file belongs to dream-path: the template never changes it, and it loads last.
 // The ember palette does the heavy lifting; this adds the crate's one idea to the hero.
 
-// The hero's empty right column shows what the crate does: spellings on the left, the one key
-// each becomes on the right. It is decoration, so its alternative text is empty.
 .dw-hero
   overflow: hidden
   isolation: isolate
 
-  &::after
-    content: "Textures\\Wood.DDS\A  \2192  textures/wood.dds\A\A //Meshes\\\\x\\Door.NIF\A  \2192  meshes/x/door.nif\A\A Sound/FX/../Door.WAV\A  \2192  sound/fx/../door.wav\A\A MUSIC\\Explore\\\\\A  \2192  music/explore/" / ""
-    position: absolute
-    z-index: -1
-    top: 50%
-    right: max(2rem, calc((100vw - var(--dw-width-page)) / 2 + 2rem))
-    transform: translateY(-50%)
-    border-left: 2px solid color-mix(in oklab, var(--dw-accent) 45%, transparent)
-    padding: .9rem 0 .9rem 1.2rem
-    color: var(--dw-text-faint)
-    font-family: var(--dw-font-mono)
-    font-size: .8rem
-    line-height: 1.7
-    white-space: pre
-    opacity: .65
-    pointer-events: none
-    mask-image: linear-gradient(90deg, #000 75%, transparent)
+// Without JavaScript the hero's empty right column shows what the crate does: spellings on the left,
+// the one key each becomes on the right. It is decoration, so its alternative text is empty. With
+// JavaScript, static/js/dream-path-hero.js draws the same idea as a machine instead.
+html:not(.dw-js) .dw-hero::after
+  content: "Textures\\Wood.DDS\A  \2192  textures/wood.dds\A\A //Meshes\\\\x\\Door.NIF\A  \2192  meshes/x/door.nif\A\A Sound/FX/../Door.WAV\A  \2192  sound/fx/../door.wav\A\A MUSIC\\Explore\\\\\A  \2192  music/explore/" / ""
+  position: absolute
+  z-index: -1
+  top: 50%
+  right: max(2rem, calc((100vw - var(--dw-width-page)) / 2 + 2rem))
+  transform: translateY(-50%)
+  border-left: 2px solid color-mix(in oklab, var(--dw-accent) 45%, transparent)
+  padding: .9rem 0 .9rem 1.2rem
+  color: var(--dw-text-faint)
+  font-family: var(--dw-font-mono)
+  font-size: .8rem
+  line-height: 1.7
+  white-space: pre
+  opacity: .65
+  pointer-events: none
+  mask-image: linear-gradient(90deg, #000 75%, transparent)
 
-  @media (max-width: 1180px)
-    &::after
-      display: none
+@media (max-width: 1180px)
+  html:not(.dw-js) .dw-hero::after
+    display: none
+
+// The machine. A stroke that starts beside it may be drawn with a finger, so the hero keeps vertical
+// scrolling and pinch zoom but leaves sideways movement to the page's script.
+.dw-hero--art
+  touch-action: pan-y pinch-zoom
+
+.dw-hero__art
+  > .dp-hero__canvas
+    opacity: 0
+    transition: opacity .6s var(--dw-ease)
+
+  > .dp-hero__still
+    position: absolute
+    object-fit: contain
+    opacity: 0
+    transition: opacity .6s var(--dw-ease)
+    pointer-events: none
+    mask-image: linear-gradient(90deg, transparent, #000 5%, #000 95%, transparent), linear-gradient(transparent, #000 7%, #000 93%, transparent)
+    mask-composite: intersect
+
+  &.is-placed > .dp-hero__still
+    opacity: 1
+
+  &.is-live > .dp-hero__canvas
+    opacity: 1
+
+  &.is-live > .dp-hero__still
+    opacity: 0
+
+// Below 1180px the text needs the width, so the machine stands above it.
+@media (max-width: 1180px)
+  html.dw-js .dw-hero--art .dw-hero__text
+    padding-top: clamp(11.5rem, 27vw, 16rem)
