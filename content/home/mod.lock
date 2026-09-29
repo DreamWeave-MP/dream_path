@@ -1,0 +1,183 @@
+{
+  "schema_version": "2",
+  "document": "lock",
+  "project": "75bc8ccd-a1ce-4618-98d8-a757e8862304",
+  "note": "Written by CI when a release tag is pushed: what each published release's archive contains. Do not edit.",
+  "releases": [
+    {
+      "version": "0.1.0",
+      "locked_from": "d000a5d284cdccb28b49de45f27584ab009dda73",
+      "artifacts": [
+        {
+          "id": "crate",
+          "format": "crate",
+          "filename": "dream-path-0.1.0.crate",
+          "media_type": "application/gzip",
+          "size": 26618,
+          "digests": {
+            "sha256": "77da8fbd812784ce99f7b3f700189f06055ac6e1a9671fcf2cc15e348665ebf3"
+          }
+        }
+      ],
+      "runtimes": {},
+      "platforms": [],
+      "provides": [],
+      "relationships": [],
+      "components": [
+        {
+          "id": "main",
+          "name": "dream-path",
+          "path": ".",
+          "required": true,
+          "default": true,
+          "requires": [],
+          "conflicts": [],
+          "suggested_with": []
+        }
+      ],
+      "groups": [],
+      "extensions": {},
+      "critical_extensions": []
+    },
+    {
+      "version": "0.1.1",
+      "locked_from": "102654313368983c4fcc5d755d690f96343d1bb5",
+      "artifacts": [
+        {
+          "id": "crate",
+          "format": "crate",
+          "filename": "dream-path-0.1.1.crate",
+          "media_type": "application/gzip",
+          "size": 27115,
+          "digests": {
+            "sha256": "301b5c1b23ec83d960055ac31804d1c3944fdf1b21a08b53f0a0d1bb1798cb60"
+          }
+        }
+      ],
+      "runtimes": {},
+      "platforms": [],
+      "provides": [],
+      "relationships": [],
+      "components": [
+        {
+          "id": "main",
+          "name": "dream-path",
+          "path": ".",
+          "required": true,
+          "default": true,
+          "requires": [],
+          "conflicts": [],
+          "suggested_with": []
+        }
+      ],
+      "groups": [],
+      "extensions": {},
+      "critical_extensions": []
+    },
+    {
+      "version": "0.1.2",
+      "locked_from": "567d39ae3b84b4a71d45de943d332ab9b9afb871",
+      "artifacts": [
+        {
+          "id": "crate",
+          "format": "crate",
+          "filename": "dream-path-0.1.2.crate",
+          "media_type": "application/gzip",
+          "size": 26833,
+          "digests": {
+            "sha256": "049f18a7dce57415b003762676b86f1ac8bf074e134556823d828dcbc04059f4"
+          }
+        }
+      ],
+      "runtimes": {},
+      "platforms": [],
+      "provides": [],
+      "relationships": [],
+      "components": [
+        {
+          "id": "main",
+          "name": "dream-path",
+          "path": ".",
+          "required": true,
+          "default": true,
+          "requires": [],
+          "conflicts": [],
+          "suggested_with": []
+        }
+      ],
+      "groups": [],
+      "extensions": {},
+      "critical_extensions": []
+    },
+    {
+      "version": "0.1.3",
+      "locked_from": "86f2979eaa6c01ce8842a8e22609feb45ad888ad",
+      "artifacts": [
+        {
+          "id": "crate",
+          "format": "crate",
+          "filename": "dream-path-0.1.3.crate",
+          "media_type": "application/gzip",
+          "size": 26916,
+          "digests": {
+            "sha256": "a19898f64cdf9fab61a1fa0f839b1ce360bc6a858db67717ff57b3e653f5c877"
+          }
+        }
+      ],
+      "runtimes": {},
+      "platforms": [],
+      "provides": [],
+      "relationships": [],
+      "components": [
+        {
+          "id": "main",
+          "name": "dream-path",
+          "path": ".",
+          "required": true,
+          "default": true,
+          "requires": [],
+          "conflicts": [],
+          "suggested_with": []
+        }
+      ],
+      "groups": [],
+      "extensions": {},
+      "critical_extensions": []
+    },
+    {
+      "version": "0.2.0",
+      "locked_from": "86c04bc7f43b2b78ebdd35652ffb3792dde7540e",
+      "artifacts": [
+        {
+          "id": "crate",
+          "format": "crate",
+          "filename": "dream-path-0.2.0.crate",
+          "media_type": "application/gzip",
+          "size": 26913,
+          "digests": {
+            "sha256": "e583db715c69f57e21a9a6583a5eef99b707582dff189842a3cd595fa18cac31"
+          }
+        }
+      ],
+      "runtimes": {},
+      "platforms": [],
+      "provides": [],
+      "relationships": [],
+      "components": [
+        {
+          "id": "main",
+          "name": "dream-path",
+          "path": ".",
+          "required": true,
+          "default": true,
+          "requires": [],
+          "conflicts": [],
+          "suggested_with": []
+        }
+      ],
+      "groups": [],
+      "extensions": {},
+      "critical_extensions": []
+    }
+  ]
+}
