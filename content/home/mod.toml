@@ -8,7 +8,7 @@ id = "75bc8ccd-a1ce-4618-98d8-a757e8862304"
 slug = "dream_path"
 type = "library"
 status = "active"
-license = "GPL-3.0-only"
+license = "MIT OR Apache-2.0"
 
 [[maintainers]]
 name = "DreamWeave"

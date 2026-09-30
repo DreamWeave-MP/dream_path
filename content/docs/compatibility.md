@@ -21,7 +21,7 @@ whatever trait implementations real users turn out to need.
 
 - **Rust 1.88** or newer, declared as `rust-version`. That is l3i's floor, and it applies with or
   without the `lua` feature.
-- **GPL-3.0-only.**
+- **MIT OR Apache-2.0**, at your option. Releases up to and including 1.0.0 were GPL-3.0-only.
 
 ## What is tested
 

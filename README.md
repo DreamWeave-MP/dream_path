@@ -70,7 +70,8 @@ assert(dreamPath.extension([[Textures\Foo.DDS]]) == "dds")
 
 ## MSRV and license
 
-Rust 1.88. GPL-3.0-only.
+Rust 1.88. dream-path is licensed under either of [MIT](LICENSE-MIT) or
+[Apache-2.0](LICENSE-APACHE), at your option. Releases up to and including 1.0.0 were GPL-3.0-only.
 
 ## Support
 

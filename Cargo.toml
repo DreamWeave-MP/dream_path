@@ -8,10 +8,10 @@ readme = "README.md"
 homepage = "https://dreamweave-mp.github.io/dream_path/"
 documentation = "https://dreamweave-mp.github.io/dream_path/docs/"
 repository = "https://github.com/DreamWeave-MP/dream_path"
-license = "GPL-3.0-only"
+license = "MIT OR Apache-2.0"
 keywords = ["openmw", "vfs", "assets", "paths", "modding"]
 categories = ["game-development"]
-include = ["src/**", "Cargo.toml", "README.md", "LICENSE"]
+include = ["src/**", "Cargo.toml", "README.md", "LICENSE-MIT", "LICENSE-APACHE"]
 
 [dependencies]
 bstr = { version = "1.13.1", default-features = false, features = ["std"] }
