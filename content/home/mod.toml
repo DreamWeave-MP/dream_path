@@ -88,3 +88,12 @@ Compose `dream_path::lua::PathExtension` into the host's `RuntimePlan`. A host t
 `dreamPath` global adds `RuntimePolicy::compat_global("@dream/path", "dreamPath")`. The functions
 and their results are unchanged.
 """
+
+[[releases]]
+version = "1.1.0"
+date = 2026-09-30
+summary = "Relicensed as MIT OR Apache-2.0 and built on l3i 1.1.0."
+changed = [
+    "Relicensed from GPL-3.0 to MIT OR Apache-2.0: this is the first release under the new terms, and releases up to and including 1.0.0 stay GPL.",
+    "l3i 1.1.0 comes from crates.io; the `@dream/path` module is unchanged.",
+]
